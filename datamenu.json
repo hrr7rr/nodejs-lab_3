@@ -1,0 +1,43 @@
+{
+  "menuCategories": 
+  [
+    {
+      "nameCategory": "Soup",
+      "categoryDishes": 
+      [
+        {
+          "dishName": "Borsch",
+          "dishPrice": 120,
+          "dishWeight": 330,
+          "dishIngredients": [
+            "beet",
+            "cabbage",
+            "potato",
+            "carrot",
+            "onion",
+            "meat",
+            "tomato pasta"
+          ],
+          "isSpicy": false,
+          "isVegetarian": false, 
+          "dishPreperationTime":  10
+        },
+        {
+          "dishName": "Buckwheat soup",
+          "dishPrice": 100,
+          "dishWeight": 270,
+          "dishIngredients": [
+            "buckwheat",
+            "potato",
+            "carrot",
+            "onion",
+            "parsley"
+          ],
+          "isSpicy": false,
+          "isVegetarian": true,
+          "dishPreperationTime":  null
+        }
+      ]
+    }
+  ]
+}
