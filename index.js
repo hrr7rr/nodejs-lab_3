@@ -95,3 +95,88 @@ const result = getFieldValue(dishes[dishIndex], path);
 } else { console.log(result.value);
 }
 });
+
+program
+    .command('category <name>')
+    .description('Показати страви однієї категорії')
+    .action((name) => {
+       const data = loadData(program.opts().file);
+       const category = data.menuCategories.find(
+      category => category.nameCategory.toLowerCase() === name.toLowerCase()
+    );
+
+   if (!category) {
+      console.error('Помилка: такої категорії не існує');
+      process.exitCode = 1;
+return;
+    }
+
+category.categoryDishes.forEach((dish, index) => {
+  console.log(`${index}. ${dish.dishName} — ${dish.dishPrice} грн`);
+ });
+
+});
+
+program
+   .command('filter')
+   .description('Відібрати страви за позначками та ціною')
+   .option('--vegetarian', 'Показати вегетаріанські страви')
+   .option('--spicy', 'Показати гострі страви')
+   .option('--max-price <number>', 'Максимальна ціна страви')
+   .action((options) => {
+    const data = loadData(program.opts().file);
+    let dishes = getDishes(data);
+
+    if (options.vegetarian) {
+     dishes= dishes.filter(dish => dish.isVegetarian === true);
+}
+
+   if (options.spicy) {
+    dishes =  dishes.filter(dish => dish.isSpicy === true);
+}
+
+   if (options.maxPrice !== undefined) {
+    const maxPrice = Number(options.maxPrice);
+
+   if (!Number.isFinite(maxPrice) || maxPrice <0) {
+    console.error('Помилка: максимальна ціна має бути невід’ємним числом');
+    process.exitCode = 1;
+    return;
+}
+
+   dishes = dishes.filter(dish => dish.dishPrice <= maxPrice);
+}
+
+ if (dishes.length === 0) {
+   console.log('Страв за заданими умовами не знайдено');
+   return;
+}
+
+ dishes.forEach((dish, index) => {
+   console.log(`${index}. ${dish.dishName} — ${dish.dishPrice} грн`);
+    });
+});
+
+program
+   .command('ingredient <name>')
+   .description('Знайти страви за інгредієнтом')
+   .action((name) => {
+      const data = loadData(program.opts().file);
+      const dishes = getDishes(data);
+      const foundDishes = dishes.filter(dish =>
+       dish.dishIngredients.some(ingredient =>
+        ingredient.toLowerCase().includes(name.toLowerCase())
+ )
+);
+
+   if (foundDishes.length === 0) {
+     console.log('Страв з таким інгредієнтом не знайдено');
+     return;
+}
+
+  foundDishes.forEach((dish, index) => {
+    console.log(`${index}. ${dish.dishName} - ${dish.dishPrice} грн`);
+  });
+});
+
+program.parse();
