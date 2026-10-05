@@ -1,4 +1,4 @@
-import {Command} from 'commader';
+import { Command } from 'commander';
 import {readFileSync} from 'node:fs';
 
 const program = new Command();
@@ -9,14 +9,17 @@ program
   .option('-f, --file <path>', 'Шлях до JSON-файлу', 'datamenu.json');
 
 function loadData (filePath) {
+ try{
   const content = readFileSync(filePath, 'utf-8');
   return JSON.parse(content);
+} catch(error) {
+   console.error(`Помилка: не вдалося прочитати файл "${filePath}"`);
+   process.exitCode = 1;
+  }
 }
-
 function getDishes(data) {
   return data.menuCategories.flatMap(category => category.categoryDishes);
 }
-
 function getFieldValue(object, path) {
    const parts = path.split('.');
    let value = object;
@@ -41,9 +44,15 @@ program
     const data = loadData( program.opts().file);
     const dishes = getDishes(data);
 
-     const limit = options.limit
-      ? Number(options.limit)
-      : dishes.length;
+     const limit = options.limit === undefined
+      ?  dishes.length
+      : Number(options.limit);
+
+    if (!Number.isInteger(limit) || limit<0) {
+      console.error('Помилка: ліміт має бути невід’ємним цілим числом')
+      process.exitCode =1;
+      return;
+}
 
     dishes.slice(0, limit).forEach((dish, index) => {
       console.log(`${index}. ${dish.dishName} — ${dish.dishPrice} грн`);
@@ -80,6 +89,7 @@ program
        if (!Number.isInteger(dishIndex) || dishIndex<0 || dishIndex >= dishes.length) {
          console.error('Помилка: неправильний індекс страви');
          process.exitCode =1;
+         return;
 }
 
 const result = getFieldValue(dishes[dishIndex], path);
